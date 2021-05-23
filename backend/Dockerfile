@@ -15,6 +15,7 @@ RUN apt-get update && \
                        tzdata
 
 COPY Gemfile Gemfile.lock ${APP_ROOT}/
+RUN gem install bundler:2.2.17
 RUN bundle install -j$(getconf _NPROCESSORS_ONLN) --without ${WITHOUT_ENV}
 
 COPY . ${APP_ROOT}/
