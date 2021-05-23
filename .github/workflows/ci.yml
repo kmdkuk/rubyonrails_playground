@@ -39,9 +39,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
       id: docker-load
       if: steps.cache-docker-image.outputs.cache-hit == 'true'
@@ -83,9 +83,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
       id: docker-load
       if: steps.cache-docker-image.outputs.cache-hit == 'true'
@@ -140,9 +140,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
       id: docker-load
       if: steps.cache-docker-image.outputs.cache-hit == 'true'
