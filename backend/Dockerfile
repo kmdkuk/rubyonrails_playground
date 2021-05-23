@@ -26,4 +26,9 @@ RUN gem update --system && \
 COPY Gemfile Gemfile.lock ${APP_ROOT}/
 RUN bundle install -j$(getconf _NPROCESSORS_ONLN) --without ${WITHOUT_ENV}
 
+RUN chown -R 1000:1000 /usr/local/bundle 
+RUN chown -R 1000:1000 /tmp
+
+USER 1000:1000
+
 COPY . ${APP_ROOT}/

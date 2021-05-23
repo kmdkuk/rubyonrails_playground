@@ -102,7 +102,7 @@ jobs:
     - name: Confirm docker-compose logs
       id: confirm-docker-compose-logs
       run: docker-compose logs db
-
+    
     - name: Cache bundle gems
       id: cache-bundle-gems
       uses: actions/cache@v1
@@ -111,6 +111,11 @@ jobs:
         key: ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-
+
+    # - name: Fix permissions of bundle
+    #   id: fix-permissions-of-bundle
+    #   run: sudo chown -R 1000:1000 ${{ env.GEMS_CACHE_DIR }}
+
     - name: Setup and Run test
       id: setup-and-run-test
       # TODO: bin/rspec
