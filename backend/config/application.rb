@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "boot"
 
 require "rails"
@@ -36,5 +38,13 @@ module Backend
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    config.generators do |g|
+      g.test_framework :rspec,
+       fixtures: false, # テストDBにレコード作成するファイルの作成をスキップ（初めだけ、のちに削除）。
+       view_specs: false, # ビューファイル用のスペックを作成しない。
+       helper_specs: false, # ヘルパーファイル用のスペックを作成しない。
+       routing_specs: false # routes.rb用のスペックファイル作成しない。
+    end
   end
 end
