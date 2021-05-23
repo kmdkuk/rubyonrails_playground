@@ -9,27 +9,55 @@ services:
       - mysql-data:/var/lib/mysql
     ports:
       - "3306:3306"
-
-  api:
+  
+  base: &base
     build:
       context: backend/
       dockerfile: Dockerfile
+      cache_from:
+        - mappin-dev-cache
       args:
         - WITHOUT_ENV=production
-    command: ./bin/rails server -b 0.0.0.0
+    image: mappin-dev:0.0.1
+    tmpfs:
+      - /tmp
+
+  wait-middleware: &wait-middleware
+    <<: *base
+    environment:
+      WAIT_HOSTS: db:3306
+    links:
+      - db
+    command: /wait
+
+  api: &api
+    <<: *base
     env_file: .env
     stdin_open: true
     tty: true
     volumes:
-      - ./backend:/src
-      - bundle:/usr/local/bundle
-    ports:
-      - "3000:3000"
+      - ./backend:/src:cached
+      - ${GEMS_CACHE_DIR:-bundle-cache}:/usr/local/bundle
+      - rails-cache:/src/tmp/cache
     links:
       - db
+  
+  console:
+    <<: *api
+    ports:
+      - 3001:3000
+    command: /bin/bash
+  
+  api_server:
+    <<: *api
+    ports:
+      - 3000:3000
+    command: bash -c "rm -f tmp/pids/server.pid && bin/rails s -b 0.0.0.0"
 
 volumes:
   mysql-data:
     driver: local
-  bundle:
+  bundle-cache:
+    driver: local
+  rails-cache:
     driver: local
