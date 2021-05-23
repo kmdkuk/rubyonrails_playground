@@ -22,13 +22,17 @@ jobs:
   image-cache-or-build:
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
 
     steps:
     - name: Check out code
       id: checkout
       uses: actions/checkout@v2
+    
+    - name: Generate dotenv
+      id: generate-dotenv
+      run: cp .env.sample .env
 
     - name: Cache docker image
       id: cache-docker-image
@@ -59,7 +63,7 @@ jobs:
     needs: image-cache-or-build
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     env:
       GEMS_CACHE_DIR: /tmp/cache/bundle
@@ -117,7 +121,7 @@ jobs:
     needs: image-cache-or-build
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     env:
       TRIVY_CACHE_DIR: /tmp/cache/trivy
