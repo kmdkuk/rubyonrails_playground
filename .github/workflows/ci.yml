@@ -102,6 +102,10 @@ jobs:
     - name: Confirm docker-compose logs
       id: confirm-docker-compose-logs
       run: docker-compose logs db
+
+    - name: create GEMS_CACHE_DIR
+      id: check-gems-cache-dir
+      run: mkdir -p ${{ env.GEMS_CACHE_DIR }} && sudo chown -R "$(id -u):$(id -g)" ${{ env.GEMS_CACHE_DIR }}
     
     - name: Cache bundle gems
       id: cache-bundle-gems
@@ -111,10 +115,6 @@ jobs:
         key: ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-
-
-    - name: create GEMS_CACHE_DIR
-      id: check-gems-cache-dir
-      run: mkdir -p ${{ env.GEMS_CACHE_DIR }} && sudo chown -R "$(id -u):$(id -g)" ${{ env.GEMS_CACHE_DIR }}
 
     - name: Setup and Run test
       id: setup-and-run-test
