@@ -114,7 +114,7 @@ jobs:
     - name: Setup and Run test
       id: setup-and-run-test
       # TODO: bin/rspec
-      run: docker-compose run --rm console bash -c "bundle install && bin/rails db:prepare"
+      run: docker-compose run --rm console bash -c "bundle install && bin/rails db:prepare && bundle exec rubocop"
 
 
   scan-image-by-trivy:
