@@ -13,7 +13,7 @@ on:
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
-  APP_IMAGE_TAG: mappin-dev:0.0.1
+  APP_IMAGE_TAG: mappin-dev:0.0.3
   APP_IMAGE_CACHE_TAG: mappin-dev-cache
   IMAGE_CACHE_DIR: /tmp/cache/docker-image
   IMAGE_CACHE_KEY: cache-image
@@ -39,9 +39,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-${{ hashFiles('Dockerfile') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-
     - name: Docker load
       id: docker-load
       if: steps.cache-docker-image.outputs.cache-hit == 'true'
@@ -49,7 +49,7 @@ jobs:
 
     - name: Docker build
       id: docker-build
-      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 base
+      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) base
 
     - name: Docker tag and save
       id: docker-tag-save
@@ -83,9 +83,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-${{ hashFiles('Dockerfile') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-
     - name: Docker load
       id: docker-load
       if: steps.cache-docker-image.outputs.cache-hit == 'true'
@@ -93,7 +93,7 @@ jobs:
 
     - name: Docker compose build
       id: docker-build
-      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 base
+      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) base
 
     - name: Wait middleware services
       id: wait-middleware
@@ -112,14 +112,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-
 
-    # - name: Fix permissions of bundle
-    #   id: fix-permissions-of-bundle
-    #   run: sudo chown -R 1000:1000 ${{ env.GEMS_CACHE_DIR }}
+    - name: create GEMS_CACHE_DIR
+      id: check-gems-cache-dir
+      run: mkdir -p ${{ env.GEMS_CACHE_DIR }} && sudo chown -R "$(id -u):$(id -g)" ${{ env.GEMS_CACHE_DIR }}
 
     - name: Setup and Run test
       id: setup-and-run-test
-      # TODO: bin/rspec
-      run: docker-compose run --rm console bash -c "bundle install && bin/rails db:prepare && bundle exec rubocop"
+      run: docker-compose run --rm console bash -c "bundle install && bin/rails db:prepare && bundle exec rubocop && bin/rspec"
 
 
   scan-image-by-trivy:
@@ -141,9 +140,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-${{ hashFiles('Dockerfile') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ env.APP_IMAGE_TAG }}-
     - name: Docker load
       id: docker-load
       if: steps.cache-docker-image.outputs.cache-hit == 'true'

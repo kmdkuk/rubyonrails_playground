@@ -18,9 +18,12 @@ services:
         - mappin-dev-cache
       args:
         - WITHOUT_ENV=production
-    image: mappin-dev:0.0.1
+    image: mappin-dev:0.0.3
     tmpfs:
       - /tmp
+    volumes:
+      - ./backend:/home/user/src
+      - ${GEMS_CACHE_DIR:-bundle-cache}:/home/user/vendor/bundle
 
   wait-middleware: &wait-middleware
     <<: *base
@@ -35,10 +38,6 @@ services:
     env_file: .env
     stdin_open: true
     tty: true
-    volumes:
-      - ./backend:/src:cached
-      - ${GEMS_CACHE_DIR:-bundle-cache}:/usr/local/bundle
-      - rails-cache:/src/tmp/cache
     links:
       - db
   
@@ -58,6 +57,4 @@ volumes:
   mysql-data:
     driver: local
   bundle-cache:
-    driver: local
-  rails-cache:
     driver: local

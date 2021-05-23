@@ -2,9 +2,16 @@ FROM ruby:3.0.1-slim
 
 ENV LANG C.UTF-8
 ENV TZ Asia/Tokyo
-ENV APP_ROOT /src
-RUN mkdir -p "${APP_ROOT}"
+ENV HOME /home/user
+ENV APP_ROOT "${HOME}"/src
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN mkdir -p "${APP_ROOT}" && \
+    chown -R "${USER_ID}":${GROUP_ID} "${HOME}"
 WORKDIR "${APP_ROOT}"
+RUN echo "Creating with UID : $USER_ID, GID: $GROUP_ID" && \
+    useradd -u $USER_ID -o -m user && \
+    groupmod -g $GROUP_ID user
 
 ARG WITHOUT_ENV=test\ development
 
@@ -23,12 +30,11 @@ ARG ARG_BUNDLER_VERSION="2.2.17"
 RUN gem update --system && \
     gem install bundler:${ARG_BUNDLER_VERSION}
 
+USER user:user
+
 COPY Gemfile Gemfile.lock ${APP_ROOT}/
-RUN bundle install -j$(getconf _NPROCESSORS_ONLN) --without ${WITHOUT_ENV}
-
-RUN chown -R 1000:1000 /usr/local/bundle 
-RUN chown -R 1000:1000 /tmp
-
-USER 1000:1000
+RUN bundle config set --local without "${WITHOUT_ENV}" && \
+    bundle config set --local path "${HOME}/vendor/bundle" && \
+    bundle install -j$(getconf _NPROCESSORS_ONLN)
 
 COPY . ${APP_ROOT}/
