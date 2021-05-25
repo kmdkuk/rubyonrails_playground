@@ -1,0 +1,9 @@
+{
+  "makefile.extensionOutputFolder": "./.vscode",
+  "solargraph.useBundler": true,
+  "solargraph.autoformat": true,
+  "solargraph.formatting": true,
+  "solargraph.bundlerPath": "/home/kmdkuk/.asdf/shims/bundle",
+  "solargraph.commandPath": "/home/kmdkuk/.asdf/shims/solargraph",
+  "solargraph.checkGemVersion": false
+}

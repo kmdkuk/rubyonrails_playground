@@ -3,3 +3,16 @@
 .env
 .env.*
 !.env.sample
+### https://raw.github.com/github/gitignore/b2ccc4644b997fa2e86da5ae37f3b053c39f3d7b/Global/VisualStudioCode.gitignore
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+

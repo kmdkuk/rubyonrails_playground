@@ -61,6 +61,8 @@ GEM
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
     ast (2.4.2)
+    backport (1.1.2)
+    benchmark (0.1.1)
     bootsnap (1.7.5)
       msgpack (~> 1.0)
     builder (3.2.4)
@@ -68,6 +70,7 @@ GEM
     concurrent-ruby (1.1.8)
     crass (1.0.6)
     diff-lcs (1.4.4)
+    e2mmap (0.1.0)
     erubi (1.10.0)
     firebase-auth-rails (0.1.2)
       firebase_id_token (~> 2.3, >= 2.3.0)
@@ -85,7 +88,12 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
+    jaro_winkler (1.5.4)
     jwt (2.2.3)
+    kramdown (2.3.1)
+      rexml
+    kramdown-parser-gfm (1.1.0)
+      kramdown (~> 2.0)
     loofah (2.9.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -107,6 +115,9 @@ GEM
     parallel (1.20.1)
     parser (3.0.1.1)
       ast (~> 2.4.1)
+    pluginator (1.5.0)
+    pre-commit (0.39.0)
+      pluginator (~> 1.5)
     puma (5.3.2)
       nio4r (~> 2.0)
     racc (1.5.2)
@@ -161,6 +172,8 @@ GEM
     redis-store (1.9.0)
       redis (>= 4, < 5)
     regexp_parser (2.1.1)
+    reverse_markdown (2.0.0)
+      nokogiri
     rexml (3.2.5)
     rspec-core (3.10.1)
       rspec-support (~> 3.10.0)
@@ -203,6 +216,20 @@ GEM
       rubocop (~> 1.0)
       rubocop-ast (>= 1.1.0)
     ruby-progressbar (1.11.0)
+    solargraph (0.40.4)
+      backport (~> 1.1)
+      benchmark
+      bundler (>= 1.17.2)
+      e2mmap
+      jaro_winkler (~> 1.5)
+      kramdown (~> 2.3)
+      kramdown-parser-gfm (~> 1.1)
+      parser (~> 3.0)
+      reverse_markdown (>= 1.0.5, < 3)
+      rubocop (>= 0.52)
+      thor (~> 1.0)
+      tilt (~> 2.0)
+      yard (~> 0.9, >= 0.9.24)
     spring (2.1.1)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
@@ -214,12 +241,14 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     thor (1.1.0)
+    tilt (2.0.10)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    yard (0.9.26)
     zeitwerk (2.4.2)
 
 PLATFORMS
@@ -230,6 +259,7 @@ DEPENDENCIES
   byebug
   firebase-auth-rails
   mysql2 (~> 0.5)
+  pre-commit
   puma (~> 5.0)
   rails (~> 6.1.3, >= 6.1.3.2)
   redis (~> 4.0)
@@ -240,6 +270,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   rubocop-rspec
+  solargraph
   spring-commands-rspec
   tzinfo-data
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   skip_before_action :authenticate_user, only: :create
   before_action :set_user, only: [:show, :update, :destroy]
@@ -17,9 +19,9 @@ class UsersController < ApplicationController
   # POST /users
   def create
     FirebaseIdToken::Certificates.request
-    raise ArgumentError, 'BadRequest Parameter' if payload.blank?
+    raise ArgumentError, "BadRequest Parameter" if payload.blank?
 
-    @user = User.find_or_initialize_by(uid: payload['sub'])
+    @user = User.find_or_initialize_by(uid: payload["sub"])
     @user.update(user_params)
     if @user.save
       render json: @user, status: :created, location: @user
@@ -59,7 +61,7 @@ class UsersController < ApplicationController
     end
 
     def token_from_request_headers
-      request.headers['Authorization']&.split&.last
+      request.headers["Authorization"]&.split&.last
     end
 
     def token
