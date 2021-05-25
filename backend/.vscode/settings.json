@@ -1,0 +1,14 @@
+{
+  "ruby.lint": {
+    "rubocop": true
+  },
+  "ruby.format": "rubocop",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "solargraph.bundlerPath": "/home/kmdkuk/.asdf/shims/bundle",
+  "solargraph.commandPath": "/home/kmdkuk/.asdf/shims/solargraph",
+  "solargraph.useBundler": true,
+  "ruby.rubocop.configFilePath": "/home/kmdkuk/go/src/github.com/kmdkuk/rubyonrails_playground/backend/.rubocop.yml",
+  "ruby.rubocop.useBundler": true,
+  "ruby.rubocop.executePath": "/home/kmdkuk/.asdf/shims/",
+}

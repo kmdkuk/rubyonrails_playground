@@ -10,6 +10,13 @@ services:
     ports:
       - "3306:3306"
   
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+  
   base: &base
     build:
       context: backend/
@@ -19,6 +26,9 @@ services:
       args:
         - WITHOUT_ENV=production
     image: mappin-dev:0.0.3
+    links:
+      - db
+      - redis
     tmpfs:
       - /tmp
     volumes:
@@ -28,9 +38,7 @@ services:
   wait-middleware: &wait-middleware
     <<: *base
     environment:
-      WAIT_HOSTS: db:3306
-    links:
-      - db
+      WAIT_HOSTS: "db:3306, redis:6379"
     command: /wait
 
   api: &api
@@ -38,8 +46,6 @@ services:
     env_file: .env
     stdin_open: true
     tty: true
-    links:
-      - db
   
   console:
     <<: *api
@@ -55,6 +61,8 @@ services:
 
 volumes:
   mysql-data:
+    driver: local
+  redis-data:
     driver: local
   bundle-cache:
     driver: local
