@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  skip_before_action :authenticate_user, only: :create
   before_action :set_user, only: [:show, :update, :destroy]
 
   # GET /users
@@ -15,8 +16,11 @@ class UsersController < ApplicationController
 
   # POST /users
   def create
-    @user = User.new(user_params)
+    FirebaseIdToken::Certificates.request
+    raise ArgumentError, 'BadRequest Parameter' if payload.blank?
 
+    @user = User.find_or_initialize_by(uid: payload['sub'])
+    @user.update(user_params)
     if @user.save
       render json: @user, status: :created, location: @user
     else
@@ -38,6 +42,11 @@ class UsersController < ApplicationController
     @user.destroy
   end
 
+  def current
+    @user = current_user
+    render json: @user
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
@@ -47,5 +56,17 @@ class UsersController < ApplicationController
     # Only allow a list of trusted parameters through.
     def user_params
       params.require(:user).permit(:uid, :user_id, :display_name, :profile)
+    end
+
+    def token_from_request_headers
+      request.headers['Authorization']&.split&.last
+    end
+
+    def token
+      params[:token] || token_from_request_headers
+    end
+
+    def payload
+      @payload ||= FirebaseIdToken::Signature.verify token
     end
 end
