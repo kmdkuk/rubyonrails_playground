@@ -121,7 +121,7 @@ jobs:
 
     - name: Setup and Run test
       id: setup-and-run-test
-      run: docker-compose run --rm frontend bash -c "npm test"
+      run: docker-compose run --rm front bash -c "npm test"
 
 
   scan-image-by-trivy:
