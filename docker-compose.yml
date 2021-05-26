@@ -13,8 +13,9 @@ services:
       - api_server
     ports:
       - 4000:3000
-    command: bash -c "/wait && npm start"
+    command: npm start
     volumes:
+      - ./frontend:/home/user/src
       - ${NODE_MODULES_CACHE_DIR:-node-modules-cache}:/home/user/node_modules
 
   db:
