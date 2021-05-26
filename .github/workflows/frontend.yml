@@ -3,18 +3,20 @@ on:
     branches:
       - master
     paths-ignore:
+      - 'backend/'
       - '**/*.md'
       - 'LICENSE'
   pull_request:
     paths-ignore:
+      - 'backend/'
       - '**/*.md'
       - 'LICENSE'
 
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
-  APP_IMAGE_TAG: mappin-dev:0.0.3
-  APP_IMAGE_CACHE_TAG: mappin-dev-cache
+  FRONTEND_IMAGE_TAG: mapin-frontend-dev:0.0.1
+  FRONTEND_IMAGE_CACHE_TAG: mapin-frontend-dev-cache
   IMAGE_CACHE_DIR: /tmp/cache/docker-image
   IMAGE_CACHE_KEY: cache-image
 
@@ -29,7 +31,7 @@ jobs:
     - name: Check out code
       id: checkout
       uses: actions/checkout@v2
-    
+
     - name: Generate dotenv
       id: generate-dotenv
       run: cp .env.sample .env
@@ -39,7 +41,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/Dockerfile') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
@@ -49,14 +51,14 @@ jobs:
 
     - name: Docker build
       id: docker-build
-      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) base
+      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) front
 
     - name: Docker tag and save
       id: docker-tag-save
       if: steps.cache-docker-image.outputs.cache-hit != 'true'
       run: mkdir -p ${IMAGE_CACHE_DIR}
-        && docker image tag ${APP_IMAGE_TAG} ${APP_IMAGE_CACHE_TAG}
-        && docker image save -o ${IMAGE_CACHE_DIR}/image.tar ${APP_IMAGE_CACHE_TAG}
+        && docker image tag ${FRONTEND_IMAGE_TAG} ${FRONTEND_IMAGE_CACHE_TAG}
+        && docker image save -o ${IMAGE_CACHE_DIR}/image.tar ${FRONTEND_IMAGE_CACHE_TAG}
 
   lint-dockerfile:
     strategy:
@@ -70,7 +72,7 @@ jobs:
 
     - name: hadolint
       id: hadolint
-      run: docker run --rm -i hadolint/hadolint < backend/Dockerfile
+      run: docker run --rm -i hadolint/hadolint < frontend/Dockerfile
 
   test-app:
     needs: image-cache-or-build
@@ -79,8 +81,8 @@ jobs:
         os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     env:
-      GEMS_CACHE_DIR: /tmp/cache/bundle
-      GEMS_CACHE_KEY: cache-gems
+      NODE_MODULES_CACHE_DIR: /tmp/cache/node_modules
+      NODE_MODULES_CACHE_KEY: cache-node_modules
 
     steps:
     - name: Check out code
@@ -96,7 +98,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/Dockerfile') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
@@ -106,32 +108,20 @@ jobs:
 
     - name: Docker compose build
       id: docker-build
-      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) base
+      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) front
 
-    - name: Wait middleware services
-      id: wait-middleware
-      run: docker-compose run --rm wait-middleware
-
-    - name: Confirm docker-compose logs
-      id: confirm-docker-compose-logs
-      run: docker-compose logs db
-
-    - name: create GEMS_CACHE_DIR
-      id: check-gems-cache-dir
-      run: mkdir -p ${{ env.GEMS_CACHE_DIR }} && sudo chown -R "$(id -u):$(id -g)" ${{ env.GEMS_CACHE_DIR }}
-    
-    - name: Cache bundle gems
-      id: cache-bundle-gems
+    - name: Cache node_modules
+      id: cache-node_modules
       uses: actions/cache@v1
       with:
-        path: ${{ env.GEMS_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}
+        path: ${{ env.NODE_MODULES_CACHE_DIR }}
+        key: ${{ runner.os }}-${{ env.NODE_MODULES_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-
+          ${{ runner.os }}-${{ env.NODE_MODULES_CACHE_KEY }}-
 
     - name: Setup and Run test
       id: setup-and-run-test
-      run: docker-compose run --rm console bash -c "bundle install && bin/rails db:prepare && bundle exec rubocop && bin/rspec"
+      run: docker-compose run --rm front bash -c "npm install && npm run lint && CI=true npm test"
 
 
   scan-image-by-trivy:
@@ -153,7 +143,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/Dockerfile') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
@@ -168,5 +158,5 @@ jobs:
         -v /var/run/docker.sock:/var/run/docker.sock
         -v ${TRIVY_CACHE_DIR}:/root/.cache/
         aquasec/trivy
-        ${APP_IMAGE_CACHE_TAG}
+        ${FRONTEND_IMAGE_CACHE_TAG}
 

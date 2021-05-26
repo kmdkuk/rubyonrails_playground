@@ -1,0 +1,174 @@
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'frontend/'
+      - '**/*.md'
+      - 'LICENSE'
+  pull_request:
+    paths-ignore:
+      - 'frontend/'
+      - '**/*.md'
+      - 'LICENSE'
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+  BACKEND_IMAGE_TAG: mapin-backend-dev:0.0.3
+  BACKEND_IMAGE_CACHE_TAG: mapin-backend-dev-cache
+  IMAGE_CACHE_DIR: /tmp/cache/docker-image
+  IMAGE_CACHE_KEY: cache-image
+
+jobs:
+  image-cache-or-build:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Check out code
+      id: checkout
+      uses: actions/checkout@v2
+    
+    - name: Generate dotenv
+      id: generate-dotenv
+      run: cp .env.sample .env
+
+    - name: Cache docker image
+      id: cache-docker-image
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.IMAGE_CACHE_DIR }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
+    - name: Docker load
+      id: docker-load
+      if: steps.cache-docker-image.outputs.cache-hit == 'true'
+      run: docker image load -i ${IMAGE_CACHE_DIR}/image.tar
+
+    - name: Docker build
+      id: docker-build
+      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) base
+
+    - name: Docker tag and save
+      id: docker-tag-save
+      if: steps.cache-docker-image.outputs.cache-hit != 'true'
+      run: mkdir -p ${IMAGE_CACHE_DIR}
+        && docker image tag ${BACKEND_IMAGE_TAG} ${BACKEND_IMAGE_CACHE_TAG}
+        && docker image save -o ${IMAGE_CACHE_DIR}/image.tar ${BACKEND_IMAGE_CACHE_TAG}
+
+  lint-dockerfile:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Check out code
+      id: checkout
+      uses: actions/checkout@v2
+
+    - name: hadolint
+      id: hadolint
+      run: docker run --rm -i hadolint/hadolint < backend/Dockerfile
+
+  test-app:
+    needs: image-cache-or-build
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+    env:
+      GEMS_CACHE_DIR: /tmp/cache/bundle
+      GEMS_CACHE_KEY: cache-gems
+
+    steps:
+    - name: Check out code
+      id: checkout
+      uses: actions/checkout@v2
+
+    - name: Generate dotenv
+      id: generate-dotenv
+      run: cp .env.sample .env
+
+    - name: Cache docker image
+      id: cache-docker-image
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.IMAGE_CACHE_DIR }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
+    - name: Docker load
+      id: docker-load
+      if: steps.cache-docker-image.outputs.cache-hit == 'true'
+      run: docker image load -i ${IMAGE_CACHE_DIR}/image.tar
+
+    - name: Docker compose build
+      id: docker-build
+      run: docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) base
+
+    - name: Wait middleware services
+      id: wait-middleware
+      run: docker-compose run --rm wait-middleware
+
+    - name: Confirm docker-compose logs
+      id: confirm-docker-compose-logs
+      run: docker-compose logs db
+
+    - name: create GEMS_CACHE_DIR
+      id: check-gems-cache-dir
+      run: mkdir -p ${{ env.GEMS_CACHE_DIR }} && sudo chown -R "$(id -u):$(id -g)" ${{ env.GEMS_CACHE_DIR }}
+
+    - name: Cache bundle gems
+      id: cache-bundle-gems
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.GEMS_CACHE_DIR }}
+        key: ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-
+
+    - name: Setup and Run test
+      id: setup-and-run-test
+      run: docker-compose run --rm console bash -c "bundle install && bin/rails db:prepare && bundle exec rubocop && bin/rspec"
+
+
+  scan-image-by-trivy:
+    needs: image-cache-or-build
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+    env:
+      TRIVY_CACHE_DIR: /tmp/cache/trivy
+
+    steps:
+    - name: Check out code
+      id: checkout
+      uses: actions/checkout@v2
+
+    - name: Cache docker image
+      id: cache-docker-image
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.IMAGE_CACHE_DIR }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
+    - name: Docker load
+      id: docker-load
+      if: steps.cache-docker-image.outputs.cache-hit == 'true'
+      run: docker image load -i ${IMAGE_CACHE_DIR}/image.tar
+
+    - name: Scan image
+      id: scan-image
+      run: docker container run
+        --rm
+        -v /var/run/docker.sock:/var/run/docker.sock
+        -v ${TRIVY_CACHE_DIR}:/root/.cache/
+        aquasec/trivy
+        ${BACKEND_IMAGE_CACHE_TAG}
+
