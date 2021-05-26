@@ -39,10 +39,10 @@ services:
       context: backend/
       dockerfile: Dockerfile
       cache_from:
-        - mappin-dev-cache
+        - mapin-backend-dev-cache
       args:
         - WITHOUT_ENV=production
-    image: mappin-dev:0.0.3
+    image: mapin-backend-dev:0.0.3
     links:
       - db
       - redis

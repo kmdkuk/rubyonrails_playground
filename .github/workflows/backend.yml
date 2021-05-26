@@ -3,18 +3,20 @@ on:
     branches:
       - master
     paths-ignore:
+      - 'frontend/'
       - '**/*.md'
       - 'LICENSE'
   pull_request:
     paths-ignore:
+      - 'frontend/'
       - '**/*.md'
       - 'LICENSE'
 
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
-  APP_IMAGE_TAG: mappin-dev:0.0.3
-  APP_IMAGE_CACHE_TAG: mappin-dev-cache
+  BACKEND_IMAGE_TAG: mapin-backend-dev:0.0.3
+  BACKEND_IMAGE_CACHE_TAG: mapin-backend-dev-cache
   IMAGE_CACHE_DIR: /tmp/cache/docker-image
   IMAGE_CACHE_KEY: cache-image
 
@@ -55,8 +57,8 @@ jobs:
       id: docker-tag-save
       if: steps.cache-docker-image.outputs.cache-hit != 'true'
       run: mkdir -p ${IMAGE_CACHE_DIR}
-        && docker image tag ${APP_IMAGE_TAG} ${APP_IMAGE_CACHE_TAG}
-        && docker image save -o ${IMAGE_CACHE_DIR}/image.tar ${APP_IMAGE_CACHE_TAG}
+        && docker image tag ${BACKEND_IMAGE_TAG} ${BACKEND_IMAGE_CACHETAG}
+        && docker image save -o ${IMAGE_CACHE_DIR}/image.tar ${BACKEND_IMAGE_CACHETAG}
 
   lint-dockerfile:
     strategy:
@@ -168,5 +170,5 @@ jobs:
         -v /var/run/docker.sock:/var/run/docker.sock
         -v ${TRIVY_CACHE_DIR}:/root/.cache/
         aquasec/trivy
-        ${APP_IMAGE_CACHE_TAG}
+        ${BACKEND_IMAGE_CACHETAG}
 
