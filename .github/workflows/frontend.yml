@@ -38,7 +38,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-docker-image
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/Dockerfile') }}
@@ -95,7 +95,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-docker-image
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/Dockerfile') }}
@@ -112,7 +112,7 @@ jobs:
 
     - name: Cache node_modules
       id: cache-node_modules
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.NODE_MODULES_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.NODE_MODULES_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}
@@ -140,7 +140,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-docker-image
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/Dockerfile') }}
