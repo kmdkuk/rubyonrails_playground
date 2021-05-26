@@ -121,7 +121,7 @@ jobs:
 
     - name: Setup and Run test
       id: setup-and-run-test
-      run: docker-compose run --rm front bash -c "CI=true npm run lint && npm test"
+      run: docker-compose run --rm front bash -c "npm install && npm run lint && CI=true npm test"
 
 
   scan-image-by-trivy:
