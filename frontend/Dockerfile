@@ -15,7 +15,7 @@ RUN mkdir -p "${APP_ROOT}" && \
   apt-get update && \
   apt-get upgrade -y && \
   apt-get install --no-install-recommends -y build-essential=12.6 \
-  ca-certificates \
+  ca-certificates=20200601~deb10u2 \
   curl=7.64.0-4+deb10u2 \
   tzdata=2021a-0+deb10u1 && \
   apt-get clean && \
