@@ -41,7 +41,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
@@ -98,7 +98,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
@@ -127,7 +127,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.GEMS_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}
+        key: ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-
 
@@ -155,7 +155,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
-        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('Dockerfile') }}
+        key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-
     - name: Docker load
