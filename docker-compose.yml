@@ -9,8 +9,6 @@ services:
     image: mapin-frontend-dev:0.0.1
     environment:
       WAIT_HOSTS: api_server:3000
-    links:
-      - api_server
     ports:
       - 4000:3000
     command: npm start
