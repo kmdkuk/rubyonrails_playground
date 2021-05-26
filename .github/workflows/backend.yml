@@ -38,7 +38,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-docker-image
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
@@ -95,7 +95,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-docker-image
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
@@ -124,7 +124,7 @@ jobs:
 
     - name: Cache bundle gems
       id: cache-bundle-gems
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.GEMS_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.GEMS_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}
@@ -152,7 +152,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-docker-image
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ env.IMAGE_CACHE_DIR }}
         key: ${{ runner.os }}-${{ env.IMAGE_CACHE_KEY }}-${{ hashFiles('backend/Gemfile.lock') }}-${{ hashFiles('backend/Dockerfile') }}
