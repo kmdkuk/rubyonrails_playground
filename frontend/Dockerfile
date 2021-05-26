@@ -6,14 +6,13 @@ ENV HOME /home/user
 ENV APP_ROOT "${HOME}/src"
 ARG USER_ID=1001
 ARG GROUP_ID=1001
-RUN mkdir -p "${APP_ROOT}" && \
-  chown -R "${USER_ID}":"${GROUP_ID}" "${HOME}"
 WORKDIR "${APP_ROOT}"
-RUN echo "Creating with UID : $USER_ID, GID: $GROUP_ID" && \
+RUN mkdir -p "${APP_ROOT}" && \
+  chown -R "${USER_ID}":"${GROUP_ID}" "${HOME}" && \
+  echo "Creating with UID : $USER_ID, GID: $GROUP_ID" && \
   useradd -l -u $USER_ID -o -m user && \
-  groupmod -g $GROUP_ID user
-
-RUN apt-get update && \
+  groupmod -g $GROUP_ID user && \
+  apt-get update && \
   apt-get upgrade -y && \
   apt-get install --no-install-recommends -y build-essential=12.6 \
   ca-certificates \
