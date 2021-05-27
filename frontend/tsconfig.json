@@ -18,7 +18,15 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "baseUrl": "src"
+    "baseUrl": "./src"
   },
-  "include": ["src"]
+  "types": [
+    "node",
+    "firebase"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "node_modules/@types/**/*.ts"
+  ]
 }
