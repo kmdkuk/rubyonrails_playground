@@ -1,14 +1,16 @@
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - 'frontend/'
+      - '.github/workflows/frontend.yml'
       - '**/*.md'
       - 'LICENSE'
   pull_request:
     paths-ignore:
       - 'frontend/'
+      - '.github/workflows/frontend.yml'
       - '**/*.md'
       - 'LICENSE'
 
