@@ -1,104 +1,21 @@
-import React, { useReducer, useEffect } from 'react'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import React, { useEffect } from 'react'
 
 import TextField from '@material-ui/core/TextField'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
-import CardHeader from '@material-ui/core/CardHeader'
-import Button from '@material-ui/core/Button'
+import {
+  Card,
+  CardContent,
+  CardActions,
+  CardHeader,
+  Button,
+} from '@material-ui/core'
 import { auth } from 'Firebase'
 import { useHistory } from 'react-router'
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      width: 400,
-      margin: `${theme.spacing(0)} auto`,
-    },
-    loginBtn: {
-      marginTop: theme.spacing(2),
-      flexGrow: 1,
-    },
-    header: {
-      textAlign: 'center',
-      background: '#212121',
-      color: '#fff',
-    },
-    card: {
-      marginTop: theme.spacing(10),
-    },
-  }),
-)
-
-//state type
-
-type State = {
-  email: string
-  password: string
-  isButtonDisabled: boolean
-  helperText: string
-  isError: boolean
-}
-
-const initialState: State = {
-  email: '',
-  password: '',
-  isButtonDisabled: true,
-  helperText: '',
-  isError: false,
-}
-
-type Action =
-  | { type: 'setEmail'; payload: string }
-  | { type: 'setPassword'; payload: string }
-  | { type: 'setIsButtonDisabled'; payload: boolean }
-  | { type: 'loginSuccess'; payload: string }
-  | { type: 'loginFailed'; payload: string }
-  | { type: 'setIsError'; payload: boolean }
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case 'setEmail':
-      return {
-        ...state,
-        email: action.payload,
-      }
-    case 'setPassword':
-      return {
-        ...state,
-        password: action.payload,
-      }
-    case 'setIsButtonDisabled':
-      return {
-        ...state,
-        isButtonDisabled: action.payload,
-      }
-    case 'loginSuccess':
-      return {
-        ...state,
-        helperText: action.payload,
-        isError: false,
-      }
-    case 'loginFailed':
-      return {
-        ...state,
-        helperText: action.payload,
-        isError: true,
-      }
-    case 'setIsError':
-      return {
-        ...state,
-        isError: action.payload,
-      }
-  }
-}
+import { useStyles } from 'styles'
+import { LoginActionType, useLoginReduser } from './LoginState'
 
 const Login = () => {
   const classes = useStyles()
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useLoginReduser()
   const history = useHistory()
 
   useEffect(() => {
@@ -107,12 +24,12 @@ const Login = () => {
     })
     if (state.email.trim() && state.password.trim()) {
       dispatch({
-        type: 'setIsButtonDisabled',
+        type: LoginActionType.SET_IS_BUTTON_DISABLED,
         payload: false,
       })
     } else {
       dispatch({
-        type: 'setIsButtonDisabled',
+        type: LoginActionType.SET_IS_BUTTON_DISABLED,
         payload: true,
       })
     }
@@ -141,7 +58,7 @@ const Login = () => {
     event,
   ) => {
     dispatch({
-      type: 'setEmail',
+      type: LoginActionType.SET_EMAIL,
       payload: event.target.value,
     })
   }
@@ -150,7 +67,7 @@ const Login = () => {
     event,
   ) => {
     dispatch({
-      type: 'setPassword',
+      type: LoginActionType.SET_PASSWORD,
       payload: event.target.value,
     })
   }
