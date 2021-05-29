@@ -11,11 +11,9 @@ export const HomePage: React.VFC = () => {
     auth.onAuthStateChanged((user) => {
       user ? setCurrentUser(user) : history.push('/login')
     })
-  }, [])
+  }, [history])
   return (
     <GenericTemplate title="トップページ">
-      <>トップページ内容</>
-
       <>{currentUser && JSON.stringify(currentUser, null, 4)}</>
     </GenericTemplate>
   )

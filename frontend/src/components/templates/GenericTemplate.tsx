@@ -23,6 +23,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
+import { auth } from 'Firebase'
 
 const drawerWidth = 240
 
@@ -138,7 +139,7 @@ const Copyright = () => {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <a href="https://github.com/kmdkuk" target="_blank">
+      <a href="https://github.com/kmdkuk" target="_blank" rel="noreferrer">
         kmdkuk
       </a>{' '}
       {new Date().getFullYear()}
@@ -227,14 +228,12 @@ const GenericTemplate: React.FC<GenericTemplateProps> = ({
                 <ListItemText primary="ログイン" />
               </ListItem>
             </Link>
-            <Link to="/logout" className={classes.link}>
-              <ListItem button>
-                <ListItemIcon>
-                  <ExitToAppIcon />
-                </ListItemIcon>
-                <ListItemText primary="ログアウト" />
-              </ListItem>
-            </Link>
+            <ListItem button onClick={() => auth.signOut()}>
+              <ListItemIcon>
+                <ExitToAppIcon />
+              </ListItemIcon>
+              <ListItemText primary="ログアウト" />
+            </ListItem>
           </List>
         </Drawer>
         <main className={classes.content}>

@@ -105,7 +105,18 @@ const Login = () => {
     auth.onAuthStateChanged((user) => {
       user && history.push('/')
     })
-  }, [])
+    if (state.email.trim() && state.password.trim()) {
+      dispatch({
+        type: 'setIsButtonDisabled',
+        payload: false,
+      })
+    } else {
+      dispatch({
+        type: 'setIsButtonDisabled',
+        payload: true,
+      })
+    }
+  }, [history, state])
 
   const signIn = async (email: string, password: string) => {
     try {
