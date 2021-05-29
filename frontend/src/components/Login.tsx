@@ -7,6 +7,8 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import CardHeader from '@material-ui/core/CardHeader'
 import Button from '@material-ui/core/Button'
+import { auth } from 'Firebase'
+import { useHistory } from 'react-router'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 //state type
 
 type State = {
-  username: string
+  email: string
   password: string
   isButtonDisabled: boolean
   helperText: string
@@ -42,7 +44,7 @@ type State = {
 }
 
 const initialState: State = {
-  username: '',
+  email: '',
   password: '',
   isButtonDisabled: true,
   helperText: '',
@@ -50,7 +52,7 @@ const initialState: State = {
 }
 
 type Action =
-  | { type: 'setUsername'; payload: string }
+  | { type: 'setEmail'; payload: string }
   | { type: 'setPassword'; payload: string }
   | { type: 'setIsButtonDisabled'; payload: boolean }
   | { type: 'loginSuccess'; payload: string }
@@ -59,10 +61,10 @@ type Action =
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case 'setUsername':
+    case 'setEmail':
       return {
         ...state,
-        username: action.payload,
+        email: action.payload,
       }
     case 'setPassword':
       return {
@@ -97,33 +99,25 @@ const reducer = (state: State, action: Action): State => {
 const Login = () => {
   const classes = useStyles()
   const [state, dispatch] = useReducer(reducer, initialState)
+  const history = useHistory()
 
   useEffect(() => {
-    if (state.username.trim() && state.password.trim()) {
-      dispatch({
-        type: 'setIsButtonDisabled',
-        payload: false,
-      })
-    } else {
-      dispatch({
-        type: 'setIsButtonDisabled',
-        payload: true,
-      })
+    auth.onAuthStateChanged((user) => {
+      user && history.push('/')
+    })
+  }, [])
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      await auth.signInWithEmailAndPassword(email, password)
+    } catch (error) {
+      console.error(error)
     }
-  }, [state.username, state.password])
+  }
 
   const handleLogin = () => {
-    if (state.username === 'abc@email.com' && state.password === 'password') {
-      dispatch({
-        type: 'loginSuccess',
-        payload: 'Login Successfully',
-      })
-    } else {
-      dispatch({
-        type: 'loginFailed',
-        payload: 'Incorrect username or password',
-      })
-    }
+    console.log('handleLogin')
+    signIn(state.email, state.password)
   }
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
@@ -132,11 +126,11 @@ const Login = () => {
     }
   }
 
-  const handleUsernameChange: React.ChangeEventHandler<HTMLInputElement> = (
+  const handleEmailChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
     dispatch({
-      type: 'setUsername',
+      type: 'setEmail',
       payload: event.target.value,
     })
   }
@@ -158,12 +152,12 @@ const Login = () => {
             <TextField
               error={state.isError}
               fullWidth
-              id="username"
+              id="email"
               type="email"
-              label="Username"
-              placeholder="Username"
+              label="Email"
+              placeholder="Email"
               margin="normal"
-              onChange={handleUsernameChange}
+              onChange={handleEmailChange}
               onKeyPress={handleKeyPress}
             />
             <TextField
