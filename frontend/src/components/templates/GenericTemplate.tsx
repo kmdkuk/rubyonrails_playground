@@ -1,26 +1,28 @@
 import React from 'react'
 import clsx from 'clsx'
+import {
+  CssBaseline,
+  Drawer,
+  Box,
+  AppBar,
+  Toolbar,
+  List,
+  ListItem,
+  Typography,
+  Divider,
+  Container,
+  IconButton,
+} from '@material-ui/core'
 import { createMuiTheme } from '@material-ui/core/styles'
 import * as colors from '@material-ui/core/colors'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { ThemeProvider } from '@material-ui/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import Drawer from '@material-ui/core/Drawer'
-import Box from '@material-ui/core/Box'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import List from '@material-ui/core/List'
-import Typography from '@material-ui/core/Typography'
-import Divider from '@material-ui/core/Divider'
-import Container from '@material-ui/core/Container'
 import { Link } from 'react-router-dom'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import IconButton from '@material-ui/core/IconButton'
 import HomeIcon from '@material-ui/icons/Home'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import { auth } from 'Firebase'
@@ -166,6 +168,19 @@ const GenericTemplate: React.FC<GenericTemplateProps> = ({
     setOpen(false)
   }
 
+  const pages = [
+    {
+      path: '/',
+      title: 'トップページ',
+      Icon: HomeIcon,
+    },
+    {
+      path: '/login',
+      title: 'ログイン',
+      Icon: AccountBoxIcon,
+    },
+  ]
+
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
@@ -212,22 +227,18 @@ const GenericTemplate: React.FC<GenericTemplateProps> = ({
           </div>
           <Divider />
           <List>
-            <Link to="/" className={classes.link}>
-              <ListItem button>
-                <ListItemIcon>
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary="トップページ" />
-              </ListItem>
-            </Link>
-            <Link to="/login" className={classes.link}>
-              <ListItem button>
-                <ListItemIcon>
-                  <AccountBoxIcon />
-                </ListItemIcon>
-                <ListItemText primary="ログイン" />
-              </ListItem>
-            </Link>
+            {pages.map((page) => {
+              return (
+                <Link to={page.path} className={classes.link}>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <page.Icon />
+                    </ListItemIcon>
+                    <ListItemText primary={page.title} />
+                  </ListItem>
+                </Link>
+              )
+            })}
             <ListItem button onClick={() => auth.signOut()}>
               <ListItemIcon>
                 <ExitToAppIcon />
