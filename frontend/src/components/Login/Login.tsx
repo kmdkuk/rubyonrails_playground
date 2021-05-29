@@ -1,17 +1,16 @@
 import React, { useEffect } from 'react'
-
-import TextField from '@material-ui/core/TextField'
 import {
   Card,
   CardContent,
   CardActions,
   CardHeader,
   Button,
+  TextField,
 } from '@material-ui/core'
 import { auth } from 'Firebase'
 import { useHistory } from 'react-router'
 import { useStyles } from 'styles'
-import { LoginActionType, useLoginReduser } from './LoginState'
+import { LoginActionType, useLoginReduser } from 'components/Login/LoginState'
 
 const Login = () => {
   const classes = useStyles()
@@ -33,7 +32,7 @@ const Login = () => {
         payload: true,
       })
     }
-  }, [history, state])
+  }, [history, state, dispatch])
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -49,7 +48,7 @@ const Login = () => {
   }
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.keyCode === 13 || event.which === 13) {
+    if (event.key === 'Enter' || event.code === 'Enter') {
       state.isButtonDisabled || handleLogin()
     }
   }
