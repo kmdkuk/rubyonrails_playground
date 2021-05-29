@@ -14,7 +14,7 @@ export const HomePage: React.VFC = () => {
   }, [history])
   return (
     <GenericTemplate title="トップページ">
-      <>{currentUser && JSON.stringify(currentUser, null, 4)}</>
+      <pre>{currentUser && JSON.stringify(currentUser, null, 4)}</pre>
     </GenericTemplate>
   )
 }
