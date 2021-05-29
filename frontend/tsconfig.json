@@ -20,13 +20,6 @@
     "noUnusedParameters": true,
     "baseUrl": "./src"
   },
-  "types": [
-    "node",
-    "firebase"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "node_modules/@types/**/*.ts"
-  ]
+  "types": ["node", "firebase"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "node_modules/@types/**/*.ts"]
 }
