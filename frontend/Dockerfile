@@ -10,6 +10,7 @@ WORKDIR "${APP_ROOT}"
 RUN mkdir -p "${APP_ROOT}" && \
   chown -R "${USER_ID}":"${GROUP_ID}" "${HOME}" && \
   echo "Creating with UID : $USER_ID, GID: $GROUP_ID" && \
+  userdel -r node && \
   useradd -l -u $USER_ID -o -m user && \
   groupmod -g $GROUP_ID user && \
   apt-get update && \
