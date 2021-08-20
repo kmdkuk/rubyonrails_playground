@@ -62,20 +62,6 @@ jobs:
         && docker image tag ${FRONTEND_IMAGE_TAG} ${FRONTEND_IMAGE_CACHE_TAG}
         && docker image save -o ${IMAGE_CACHE_DIR}/image.tar ${FRONTEND_IMAGE_CACHE_TAG}
 
-  lint-dockerfile:
-    strategy:
-      matrix:
-        os: [ubuntu-20.04]
-    runs-on: ${{ matrix.os }}
-    steps:
-    - name: Check out code
-      id: checkout
-      uses: actions/checkout@v2
-
-    - name: hadolint
-      id: hadolint
-      run: docker run --rm -i hadolint/hadolint < frontend/Dockerfile
-
   test-app:
     needs: image-cache-or-build
     strategy:

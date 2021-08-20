@@ -3,7 +3,7 @@ FROM ruby:3.0.1-slim
 ENV LANG C.UTF-8
 ENV TZ Asia/Tokyo
 ENV HOME /home/user
-ENV APP_ROOT "${HOME}"/src
+ENV APP_ROOT ${HOME}/src
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN mkdir -p "${APP_ROOT}" && \
@@ -18,7 +18,7 @@ ARG WITHOUT_ENV=test\ development
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install --no-install-recommends -y build-essential=12.6 \
-                                               libmariadb-dev=1:10.3.27-0+deb10u1 \
+                                               libmariadb-dev \
                                                curl=7.64.0-4+deb10u2 \
                                                tzdata=2021a-0+deb10u1 && \
     apt-get clean && \
