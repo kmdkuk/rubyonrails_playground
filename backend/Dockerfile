@@ -17,10 +17,10 @@ ARG WITHOUT_ENV=test\ development
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install --no-install-recommends -y build-essential=12.6 \
+    apt-get install --no-install-recommends -y build-essential \
                                                libmariadb-dev \
-                                               curl=7.64.0-4+deb10u2 \
-                                               tzdata=2021a-0+deb10u1 && \
+                                               curl \
+                                               tzdata && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
