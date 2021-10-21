@@ -1,4 +1,4 @@
-FROM node:14.17.6-buster-slim
+FROM node:14.18.1-buster-slim
 
 ENV LANG C.UTF-8
 ENV TZ Asia/Tokyo
